@@ -1,4 +1,4 @@
-# zombiecodefinder
+# Zombie Code Finder
 Find Zombie code in your svn repo
 
 ##What is Zombie code?
