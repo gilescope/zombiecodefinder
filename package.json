@@ -9,6 +9,9 @@
     "fs":"0.0.x",
     "xml2js":"0.4.x"
   },
+  "scripts":{
+    "start":"node server.js"
+  },
   "engines":{
     "node":">0.4.11"
   },
