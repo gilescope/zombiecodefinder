@@ -30,3 +30,7 @@ The bits in blue are old and rarely changed. There be zombies, get a shovel and 
   2. npm install
   3. npm start my.xml
   4. view index.html in the browser of your choice.
+
+##Known issues:
+
+If you're viewing it locally on a mac use Safari as Chrome blocks the .json reference.
