@@ -1,31 +1,29 @@
-console.log('hello world 2');
+console.log('Zombie Code Finder - first argument should point to the svn log file');
+console.log('(To create file: svn log --with-all-revprops -v --xml http://.../trunk > my.xml)');
+
+var args = process.argv.slice(2);
 
 var fs = require('fs'),
     xml2js = require('xml2js');
 
 var parser = new xml2js.Parser();
 
-//var filename = 'test/small.xml';
-var filename = 'test/svn.apache.org.xml';
+var filename = args[0];
 
 fs.readFile(filename, function(err, data) {
-    console.log('got here 0');
     parser.parseString(data, function (err, result) {
-        console.log('error?');
-        console.log(err);
-        console.log('==enderror==');
-      //  console.log(result.log.logentry);
+        if (err) {
+            console.log('==error==');
+            console.log(err);
+            console.log('==enderror==');
+        }
 
         var model = { name:"svn", children:[]};
 
         for (var i = 0; i < result.log.logentry.length; i++) {
-            //console.log(result.log.logentry[i]);
             var entry = result.log.logentry[i];
 
-            //console.log(entry);
             var entrydate = entry.date[0];
-            console.log(entrydate);
-console.log( Date.parse(entrydate));
             var was_ms = Date.parse(entrydate);
             var today_ms = new Date().getTime();
 
@@ -33,11 +31,6 @@ console.log( Date.parse(entrydate));
             var one_day=1000*60*60*24;
 
             var age = Math.round((today_ms - was_ms) / one_day);
-
-
-            console.log(entrydate);
-            //console.log(entry.paths[0].path[0]);
-            //console.log(entry.paths[0].path[0]._);
 
             if (entry.paths[0].path)
             {
@@ -72,14 +65,11 @@ console.log( Date.parse(entrydate));
             }
         }
 
-        console.log('Done');
-        console.log(model);
-
         var fs = require('fs');
 
         fs.writeFile('out.json',  JSON.stringify(model) );
-
+        console.log('Done - view index.html to see the results. (raw output is in out.json)');
     });
 });
 
-console.log('fin');
+console.log('processing...');
