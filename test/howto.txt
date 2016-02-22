@@ -1,0 +1,1 @@
+svn log  --with-all-revprops -v   --xml http://svn.apache.org/repos/asf/subversion/trunk > svn.apache.org.log.xml
