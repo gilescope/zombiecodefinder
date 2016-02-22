@@ -5,12 +5,12 @@
   "description":"Finds undead code.",
   "repository":"gilescope/zombiecodefinder",
   "dependencies":{
-    "d3":"3.5.x"
-    "fs":"0.0.x"
+    "d3":"3.5.x",
+    "fs":"0.0.x",
     "xml2js":"0.4.x"
   },
   "engines":{
     "node":">0.4.11"
-  }
-  "license":"GPLv3"
+  },
+  "license":"GPL-3.0"
 }
