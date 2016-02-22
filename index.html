@@ -9,6 +9,7 @@ path {
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="out.js"></script>
 <script>
 var maxAgeToColorFullBlue = 356 * 2;//years
 
@@ -42,7 +43,16 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
 
-d3.json("out.json", function(error, root) {
+svg.selectAll("path")
+            .data(partition.nodes(data))
+            .enter().append("path")
+            .attr("d", arc)
+            .style("fill", function(d) { return color2(d.ageInDays); })
+            .on("click", click)
+            .append("title")
+            .text(function(d) { return d.name + "\nTotal Commits: " + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
+
+/*d3.json("out.json", function(error, root) {
   if (error) throw error;
 
   svg.selectAll("path")
@@ -54,7 +64,7 @@ d3.json("out.json", function(error, root) {
     .append("title")
       .text(function(d) { return d.name + "\nTotal Commits: " + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
 });
-
+*/
 function click(d) {
   svg.transition()
       .duration(750)

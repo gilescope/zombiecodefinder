@@ -97,7 +97,7 @@ fs.readFile(filename, function(err, data) {
 
         var fs = require('fs');
 
-        fs.writeFile('out.json',  JSON.stringify(model) );
+        fs.writeFile('out.js',  'var data = ' + JSON.stringify(model)+';' );
         console.log('Done - view index.html to see the results. (raw output is in out.json)');
     });
 });
