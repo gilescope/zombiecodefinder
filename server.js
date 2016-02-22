@@ -18,30 +18,46 @@ fs.readFile(filename, function(err, data) {
             console.log('==enderror==');
         }
 
-        var model = { name:"svn", children:[]};
+        const one_day_in_milliseconds = 1000*60*60*24;
+        var model = { name:"svn", children:[], deadchildren:[]};
+        var today_ms = new Date().getTime();
 
+        //For each log entry...
         for (var i = 0; i < result.log.logentry.length; i++) {
             var entry = result.log.logentry[i];
 
-            var entrydate = entry.date[0];
-            var was_ms = Date.parse(entrydate);
-            var today_ms = new Date().getTime();
-
-            //Get 1 day in milliseconds
-            var one_day=1000*60*60*24;
-
-            var age = Math.round((today_ms - was_ms) / one_day);
-
             if (entry.paths[0].path)
             {
+                var entrydate = entry.date[0];
+                var was_ms = Date.parse(entrydate);
+                var age = Math.round((today_ms - was_ms) / one_day_in_milliseconds);
+
+                //For each path mentioned in the log entry...
                 for (var j = 0; j < entry.paths[0].path.length; j++) {
                     var path = entry.paths[0].path[j];
                     var parts = path._.split('/');
 
-                    //3 = 1 (base) + /subversion/trunk
+                    //2 = 1 (base) + /subversion
                     var parent = model;
-                    for (var k = 3; k < parts.length; k++) {
+
+                    //For each directory in the path...
+                    for (var k = 2; k < parts.length; k++) {
                         var child = null;
+
+                        //Has this directory / file already been deleted?
+                        var escape = false;
+                        for (var l = 0; l < parent.deadchildren.length;l++)
+                        {
+                            if (parent.deadchildren[l].name === parts[k])
+                            {
+                                escape=true;
+                                break;
+                            }
+                        }
+                        if (escape)
+                            break;
+
+                        //Have we seen this child dir before?
                         for (var l = 0; l < parent.children.length;l++)
                         {
                             if (parent.children[l].name === parts[k])
@@ -51,14 +67,28 @@ fs.readFile(filename, function(err, data) {
                             }
                         }
 
-                        if (!child) {
-                            child = { name:parts[k], size: 1, date:entrydate, ageInDays: age, children: []};
-                            parent.children.push(child);
+                        //If we're considering the final part of the path...check action to see if delete
+                        if (k == parts.length - 1 && path.$.action === 'D')
+                        {
+                            child = { name:parts[k] };
+                            parent.deadchildren.push(child);
                         }
                         else {
-                            child.size += 1;
+                            if (!child) {
+                                child = {
+                                    name: parts[k],
+                                    size: 1,
+                                    ageInDays: age,
+                                    children: [],
+                                    deadchildren: []
+                                };
+                                parent.children.push(child);
+                            }
+                            else {
+                                child.size += 1;
+                            }
                         }
-
+                        //Go one level deeper into the path...
                         parent = child;
                     }
                 }

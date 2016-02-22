@@ -19,6 +19,8 @@ Here's a snapshot of viewing subversion's codebase:
 
 http://gilescope.github.io/zombiecodefinder/
 
+(Click to zoom, click center to zoom out)
+
 The bits in blue are old and rarely changed. There be zombies, get a shovel and start dispatching them.
 
 

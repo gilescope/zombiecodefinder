@@ -10,6 +10,7 @@ path {
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
+var maxAgeToColorFullBlue = 356 * 2;//years
 
 var width = 960,
     height = 700,
@@ -24,7 +25,7 @@ var y = d3.scale.sqrt()
     .range([0, radius]);
 
 var color = d3.scale.category20c();
-var color2 = d3.scale.linear().domain([0, 5000]).range(["red","blue"]);
+var color2 = d3.scale.linear().domain([0, maxAgeToColorFullBlue]).range(["red","blue"]);
 
 var partition = d3.layout.partition()
     .value(function(d) { return d.size; });
@@ -51,7 +52,7 @@ d3.json("out.json", function(error, root) {
       .style("fill", function(d) { return color2(d.ageInDays); })
       .on("click", click)
     .append("title")
-      .text(function(d) { return d.name + "\n" + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
+      .text(function(d) { return d.name + "\nTotal Commits: " + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
 });
 
 function click(d) {
