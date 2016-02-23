@@ -10,6 +10,13 @@ var parser = new xml2js.Parser();
 
 var filename = args[0];
 
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+        position = position || 0;
+        return this.substr(position, searchString.length) === searchString;
+    };
+}
+
 fs.readFile(filename, function(err, data) {
     parser.parseString(data, function (err, result) {
         if (err) {
@@ -21,6 +28,8 @@ fs.readFile(filename, function(err, data) {
         const one_day_in_milliseconds = 1000*60*60*24;
         var model = { name:"svn", children:[], deadchildren:[]};
         var today_ms = new Date().getTime();
+
+        var copyStack = [];
 
         //For each log entry...
         for (var i = 0; i < result.log.logentry.length; i++) {
@@ -35,10 +44,37 @@ fs.readFile(filename, function(err, data) {
                 //For each path mentioned in the log entry...
                 for (var j = 0; j < entry.paths[0].path.length; j++) {
                     var path = entry.paths[0].path[j];
-                    var parts = path._.split('/');
+
+                    var effectivePath = path._;
+
+                    if (effectivePath) {
+                        //We should go through this stack backwards...to bring the path back to present day.
+                        for (var m = copyStack.length - 1; m >= 0; m--) {
+                            if (effectivePath.startsWith(copyStack[m].from)) {
+                                effectivePath = copyStack[m].to + effectivePath.substring(copyStack[m].from.length);
+
+ //                               console.log('=========');
+   //                             console.log(path._);
+     //                           console.log(copyStack[m]);
+       //                         console.log('rewrite to: ' + effectivePath);
+                            }
+                        }
+                    }
+
+                    var parts = effectivePath.split('/');
 
                     //2 = 1 (base) + /subversion
                     var parent = model;
+
+                    //console.log(path.$);
+                    //If there's a copy from some other part of the repo, then we need to propergate the deadchildren...
+                    //I knew the dead would be try and get me for trying to get the zombies!
+                    if (path.$.action === 'A' && path.$['copyfrom-path'])
+                    {
+                        //console.log(path._);
+                        //console.log('to ' + path.$['copyfrom-path']);
+                        copyStack.push({ from: path._, to: path.$['copyfrom-path']});
+                    }
 
                     //For each directory in the path...
                     for (var k = 2; k < parts.length; k++) {

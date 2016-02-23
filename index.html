@@ -52,19 +52,6 @@ svg.selectAll("path")
             .append("title")
             .text(function(d) { return d.name + "\nTotal Commits: " + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
 
-/*d3.json("out.json", function(error, root) {
-  if (error) throw error;
-
-  svg.selectAll("path")
-      .data(partition.nodes(root))
-    .enter().append("path")
-      .attr("d", arc)
-      .style("fill", function(d) { return color2(d.ageInDays); })
-      .on("click", click)
-    .append("title")
-      .text(function(d) { return d.name + "\nTotal Commits: " + formatNumber(d.value) + "\nAge in days: " + d.ageInDays; });
-});
-*/
 function click(d) {
   svg.transition()
       .duration(750)
