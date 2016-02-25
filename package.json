@@ -1,19 +1,21 @@
 {
-  "name":"zombiecodefinder",
-  "version":"0.0.1",
-  "author":"http://gilescope.github.com",
-  "description":"Finds undead code.",
-  "repository":"gilescope/zombiecodefinder",
-  "dependencies":{
-    "d3":"3.5.x",
-    "fs":"0.0.x",
-    "xml2js":"0.4.x"
+  "name": "zombiecodefinder",
+  "version": "0.0.1",
+  "author": "http://gilescope.github.com",
+  "description": "Finds undead code.",
+  "repository": "gilescope/zombiecodefinder",
+  "dependencies": {
+    "chai": "^3.5.0",
+    "chai-shallow-deep-equal": "^1.4.0",
+    "d3": "3.5.x",
+    "fs": "0.0.x",
+    "xml2js": "0.4.x"
   },
-  "scripts":{
-    "start":"node server.js"
+  "scripts": {
+    "start": "node server.js"
   },
-  "engines":{
-    "node":">0.4.11"
+  "engines": {
+    "node": ">0.4.11"
   },
-  "license":"GPL-3.0"
+  "license": "GPL-3.0"
 }

@@ -17,7 +17,7 @@ http://www.bitnative.com/2012/10/22/kill-the-zombies-in-your-code/
 
 Here's a snapshot of viewing subversion's codebase:
 
-http://gilescope.github.io/zombiecodefinder/
+http://gilescope.github.io/zombiecodefinder/example.html
 
 (Click to zoom, click center to zoom out)
 
