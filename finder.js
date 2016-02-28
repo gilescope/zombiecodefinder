@@ -133,6 +133,7 @@ exports.buildModel = function(data, callback) {
                                     name: parts[k],
                                     size: 1,
                                     ageInDays: age,
+                                    lasttouchedfile: effectivePath,
                                     children: [],
                                     deadchildren: []
                                 };
