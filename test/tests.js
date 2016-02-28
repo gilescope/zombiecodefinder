@@ -11,7 +11,7 @@ function log(logentries)
 
 function path(obj) {
     var defaultPath = {
-        textmods:true,
+        'text-mods':true,
         kind:'file',
         action:'M',
         promods:false,
@@ -21,7 +21,7 @@ function path(obj) {
     Object.assign(defaultPath, obj);
 
     return `<path
-                text-mods="${defaultPath.textmods}"
+                text-mods="${defaultPath['text-mods']}"
                 kind="${defaultPath.kind}"
                 action="${defaultPath.action}"
                 prop-mods="${defaultPath.promods}">${defaultPath.file}</path>`;
@@ -63,13 +63,14 @@ describe("zombiecodefinder", function() {
                "name": "svn",
                "children": [
                    {
-                       "ageInDays": 3,
                        "children": [],
-                       "name": "patch_tests.py",
+                       "name": "patch_tests.py"
                    }
                ],
-               "deadchildren": [],
+               "deadchildren": []
            });
+           expect(model.deadchildren.length).to.equal(0);
+           expect(model.children.length).to.equal(1);
        });
    });
 
@@ -83,8 +84,51 @@ describe("zombiecodefinder", function() {
             expect(model).to.shallowDeepEqual({
                 "name": "svn",
                 "children": [],
-                "deadchildren": [{name:"patch_tests.py"}],
+                "deadchildren": [{name:"patch_tests.py"}]
             });
+            expect(model.children.length).to.equal(0);
         });
     });
+
+    it("a file copied and then deleted should not appear in the reuslts.", function(){
+        var input = log(
+            entry({paths :[{ file: '/subversion/patch_tests.py', action:'D' }]}) +
+            entry({paths :[{ action:'A', 'copyfrom-path': '/subversion/original.py', file: '/subversion/patch_tests.py' }]}) +
+            entry({paths :[{ action:'A', file: '/subversion/original.py' }]})
+        );
+
+        finder.buildModel(input, function(model) {
+            expect(model).to.shallowDeepEqual({
+                "name": "svn",
+                "children": [],
+                "deadchildren": [{name:"patch_tests.py"}]
+            });
+            expect(model.deadchildren.length).to.equal(1);
+            expect(model.children).to.equal([]);
+        });
+    });
+
+    it("a file copied and not deleted should appear in the reuslts once as the final filename.", function(){
+        var input = log(
+            entry({paths :[{ action:'A', 'copyfrom-path': '/subversion/original.py', file: '/subversion/patch_tests.py' }]}) +
+            entry({paths :[{ action:'A', file: '/subversion/original.py' }]})
+        );
+
+        finder.buildModel(input, function(model) {
+            expect(model).to.shallowDeepEqual({
+                "name": "svn",
+                "children": [
+                    {
+                        "children": [],
+                        "deadchildren": [],
+                        "name": "patch_tests.py",
+                        "size": 1
+                    }
+                ],
+                "deadchildren": []
+            });
+            expect(model.children.length).to.equal(1);
+        });
+    });
+
 });
