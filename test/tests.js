@@ -20,11 +20,19 @@ function path(obj) {
 
     Object.assign(defaultPath, obj);
 
-    return `<path
+    var res = `<path
                 text-mods="${defaultPath['text-mods']}"
                 kind="${defaultPath.kind}"
                 action="${defaultPath.action}"
-                prop-mods="${defaultPath.promods}">${defaultPath.file}</path>`;
+                prop-mods="${defaultPath.promods}"
+                `;
+
+    if (defaultPath['copyfrom-path'])
+    {
+        res += 'copyfrom-path="' + defaultPath['copyfrom-path'] + '"';
+    }
+
+    return res + `>${defaultPath.file}</path>`;
 }
 
 function entry(obj) {
@@ -104,7 +112,7 @@ describe("zombiecodefinder", function() {
                 "deadchildren": [{name:"patch_tests.py"}]
             });
             expect(model.deadchildren.length).to.equal(1);
-            expect(model.children).to.equal([]);
+            expect(model.children.length).to.equal(0);
         });
     });
 
@@ -122,7 +130,7 @@ describe("zombiecodefinder", function() {
                         "children": [],
                         "deadchildren": [],
                         "name": "patch_tests.py",
-                        "size": 1
+                        "size": 2 //There have been 2 commits to this file conceptually.
                     }
                 ],
                 "deadchildren": []

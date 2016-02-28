@@ -91,7 +91,7 @@ exports.buildModel = function(data, callback) {
                     {
                         //console.log(path._);
                         //console.log('to ' + path.$['copyfrom-path']);
-                        copyStack.push({ from: path._, to: path.$['copyfrom-path']});
+                        copyStack.push({ to: path._, from: path.$['copyfrom-path']});
                     }
 
                     //For each directory in the path...
