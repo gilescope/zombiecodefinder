@@ -33,7 +33,7 @@ exports.prune = function prune(parent, dir) {
     }
 };
 
-exports.buildModel = function(data, callback) {
+exports.buildModel = function(data, ignoreTypes, callback) {
     parser.parseString(data, function (err, result) {
         if (err) {
             console.log('==error==');
@@ -44,6 +44,10 @@ exports.buildModel = function(data, callback) {
         const one_day_in_milliseconds = 1000*60*60*24;
         var model = { name:"svn", children:[], deadchildren:[]};
         var today_ms = new Date().getTime();
+
+        var ignoreFileExtentions = ignoreTypes.split(';').map(function(d) { return d.substring(2);});//axe *.extention prefix.
+        ignoreFileExtentions = ignoreFileExtentions.filter(function(f){ return !(f === ""); });
+
 
         var copyStack = [];
 
@@ -64,6 +68,7 @@ exports.buildModel = function(data, callback) {
                     var path = entry.paths[0].path[j];
 
                     var effectivePath = path._;
+
 
                     if (effectivePath) {
                         //We should go through this stack backwards...to bring the path back to present day.
@@ -93,6 +98,20 @@ exports.buildModel = function(data, callback) {
                         //console.log('to ' + path.$['copyfrom-path']);
                         copyStack.push({ to: path._, from: path.$['copyfrom-path']});
                     }
+
+                    //Check for ignored file types...
+                    var ignoreFile = false;
+                    for (var ext of ignoreFileExtentions)
+                    {
+                        if (effectivePath.endsWith(ext))
+                        {
+                            ignoreFile = true;
+                            break;
+                        }
+                    }
+                    if (ignoreFile)
+                        continue;
+
 
                     //For each directory in the path...
                     for (var k = 2; k < parts.length; k++) {

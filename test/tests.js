@@ -66,7 +66,7 @@ describe("zombiecodefinder", function() {
            entry({paths :[{ file: '/subversion/patch_tests.py' }]})
        );
 
-       finder.buildModel(input, function(model) {
+       finder.buildModel(input,'', function(model) {
            expect(model).to.shallowDeepEqual({
                "name": "svn",
                "children": [
@@ -88,7 +88,7 @@ describe("zombiecodefinder", function() {
             entry({paths :[{ file: '/subversion/patch_tests.py' }]})
         );
 
-        finder.buildModel(input, function(model) {
+        finder.buildModel(input, '', function(model) {
             expect(model).to.shallowDeepEqual({
                 "name": "svn",
                 "children": [],
@@ -105,7 +105,7 @@ describe("zombiecodefinder", function() {
             entry({paths :[{ action:'A', file: '/subversion/original.py' }]})
         );
 
-        finder.buildModel(input, function(model) {
+        finder.buildModel(input, '', function(model) {
             expect(model).to.shallowDeepEqual({
                 "name": "svn",
                 "children": [],
@@ -122,7 +122,7 @@ describe("zombiecodefinder", function() {
             entry({paths :[{ action:'A', file: '/subversion/original.py' }]})
         );
 
-        finder.buildModel(input, function(model) {
+        finder.buildModel(input, '', function(model) {
             expect(model).to.shallowDeepEqual({
                 "name": "svn",
                 "children": [
@@ -130,13 +130,40 @@ describe("zombiecodefinder", function() {
                         "children": [],
                         "deadchildren": [],
                         "name": "patch_tests.py",
+                        "lasttouchedfile": "/subversion/patch_tests.py",
                         "size": 2 //There have been 2 commits to this file conceptually.
                     }
                 ],
+             //   "lasttouchedfile": "patch_tests.py",
                 "deadchildren": []
             });
             expect(model.children.length).to.equal(1);
         });
     });
 
+
+    it("results should ignore files of ignored type", function(){
+        var input = log(
+            entry({paths :[{ file: '/subversion/patch_tests.ignore' }]}) +
+            entry({paths :[{ file: '/subversion/patch_tests.py' }]})
+        );
+
+        finder.buildModel(input, '*.ignore', function(model) {
+            expect(model).to.shallowDeepEqual({
+                "name": "svn",
+                "lasttouchedfile": "patch_tests.py",
+                "children": [
+                    {
+                        "children": [],
+                        "deadchildren": [],
+                        "name": "patch_tests.py",
+                        "lasttouchedfile": "/subversion/patch_tests.py",
+                        "size": 1
+                    }
+                ],
+                "deadchildren": []
+            });
+            expect(model.children.length).to.equal(0);
+        });
+    });
 });

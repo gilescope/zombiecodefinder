@@ -28,7 +28,7 @@ if (!String.prototype.startsWith) {
 
 fs.readFile(filename, function(err, data) {
 
-        finder.buildModel(data, function(model) {
+        finder.buildModel(data, "*.csproj", function(model) {
 
         //Prune to reality if specified:
         if (args.length > 1)
