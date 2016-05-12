@@ -168,6 +168,13 @@ exports.buildModel = function(data, ignoreTypes, callback) {
                 }
             }
         }
+
+        model.ageInDays = 1000000;
+        for (var i = 0; i < model.children.length; i++)
+        {
+            model.ageInDays = Math.min(model.ageInDays, model.children[i].ageInDays);
+        }
+        
         callback(model);
     });
 };

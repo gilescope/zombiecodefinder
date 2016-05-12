@@ -44,7 +44,6 @@ path {
 <script>
 var data;
 
-var maxAgeToColorFullBlue = 356 * 3;//years
 
 var width = 960,
     height = 700,
@@ -62,6 +61,24 @@ var x = d3.scale.linear()
 
 var y = d3.scale.sqrt()
     .range([0, radius]);
+
+
+function maxAgeInDays(data) {
+    var current = 0;
+    for (var i = 0; i < data.length; i++)
+    {
+        if (data[i].ageInDays)
+            current = Math.max(current, data[i].ageInDays);
+
+        if (data[i].children)
+        {
+            current = Math.max(current, maxAgeInDays(data[i].children));
+        }
+    }
+    return current;
+}
+var maxAgeToColorFullBlue = maxAgeInDays([ data ]);
+console.log(maxAgeToColorFullBlue);
 
 var color = d3.scale.category20c();
 var color2 = d3.scale.linear().domain([0, maxAgeToColorFullBlue]).range(["green","black"]);
@@ -121,7 +138,7 @@ function mouseover(d) {
 
     var percentage = (d.ageInDays);
     var percentageString = percentage + " days old";
-
+    var breadcrumbMessage = percentageString;
     d3.select("#percentage")
             .text(percentageString);
 
@@ -129,7 +146,7 @@ function mouseover(d) {
             .style("visibility", "");
 
     var sequenceArray = getAncestors(d);
-    updateBreadcrumbs(sequenceArray, percentageString);
+    updateBreadcrumbs(sequenceArray, breadcrumbMessage);
 
     // Fade all the segments.
     d3.selectAll("path")
